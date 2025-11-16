@@ -1,24 +1,20 @@
 ---
-layout: page
-# The Category layout
+layout: default
 ---
+{% assign category_name = page.title | downcase %}
 
-{% include lang.html %}
+<h1>Category: {{ category_name }}</h1>
 
-<div id="page-category">
-  <h1 class="ps-lg-2">
-    <i class="far fa-folder-open fa-fw text-muted"></i>
-    {{ page.title }}
-    <span class="lead text-muted ps-2">{{ page.posts | size }}</span>
-  </h1>
+{% assign filtered_articles = site.articles | where_exp: 'item', 'item.categories contains category_name' %}
 
-  <ul class="content ps-0">
-    {% for post in page.posts %}
-      <li class="d-flex justify-content-between px-md-3">
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-        <span class="dash flex-grow-1"></span>
-        {% include datetime.html date=post.date class='text-muted small text-nowrap' lang=lang %}
+{% if filtered_articles.size > 0 %}
+  <ul>
+    {% for article in filtered_articles %}
+      <li>
+        <a href="{{ article.url | relative_url }}">{{ article.title }}</a>
       </li>
     {% endfor %}
   </ul>
-</div>
+{% else %}
+  <p>No articles found in this category.</p>
+{% endif %}
