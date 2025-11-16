@@ -1,0 +1,14 @@
+- name: Cloud
+  categories:
+    - name: aws
+      title: Amazon Web Services
+      image: /assets/img/categories/aws-logo.png
+      description: Cloud infrastructure and platform services provided by Amazon
+    - name: azure
+      title: Azure
+      image: /assets/img/categories/azure-logo.svg
+      description: Cloud infrastructure and platform services provided by Microsoft
+    - name: gcp
+      title: Google Cloud Platform
+      image: /assets/img/categories/gcp-logo.png
+      description: Cloud infrastructure and platform services provided by Google
