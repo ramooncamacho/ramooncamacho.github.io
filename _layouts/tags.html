@@ -1,22 +1,124 @@
 ---
 layout: page
-# All the Tags of posts.
+# All the Tags of articles.
 ---
-
 <div id="tags" class="d-flex flex-wrap mx-xl-2">
-  {% assign tags = '' | split: '' %}
-  {% for t in site.tags %}
-    {% assign tags = tags | push: t[0] %}
+  {% assign tag_list = '' | split: '' %}
+
+  {% for article in site.articles %}
+    {% if article.tags %}
+      {% for tag in article.tags %}
+        {% unless tag_list contains tag %}
+          {% assign tag_list = tag_list | push: tag %}
+        {% endunless %}
+      {% endfor %}
+    {% endif %}
   {% endfor %}
 
-  {% assign sorted_tags = tags | sort_natural %}
+  {% assign sorted_tags = tag_list | sort_natural %}
 
-  {% for t in sorted_tags %}
+  <div>
+    <a class="tag" href="#" data-tag="all"> All </a>
+  </div>
+
+  {% for tag in sorted_tags %}
     <div>
-      <a class="tag" href="{{ t | slugify | url_encode | prepend: '/tags/' | append: '/' | relative_url }}">
-        {{ t -}}
-        <span class="text-muted">{{ site.tags[t].size }}</span>
+      <a class="tag" href="#" data-tag="{{ tag | slugify }}">
+        {{ tag }}
       </a>
     </div>
   {% endfor %}
 </div>
+
+<hr>
+
+<div id="articles">
+  {% for article in site.articles %}
+    <div class="article-item mb-3" data-tags="{% for tag in article.tags %}{{ tag | slugify }} {% endfor %}">
+      <div class="article-header">
+        <!-- Título do artigo -->
+        <!-- <a href="{{ article.url | relative_url }}" class="article-title">{{ article.title }}</a> -->
+        <h5 class="card-title my-2 mt-md-0">
+          <a href="{{ article.url | relative_url }}" class="card-title">{{ article.title }}</a>
+        </h5>
+        <!-- Exibe as tags associadas a cada artigo na mesma linha -->
+        <div class="article-tags">
+          {% for tag in article.tags %}
+            <span class="tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<style>
+  .article-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const tagLinks = document.querySelectorAll('#tags a');
+    const articles = document.querySelectorAll('#articles .article-item');
+
+    let selectedTags = [];
+
+    tagLinks.forEach((link) => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const clickedTag = this.getAttribute('data-tag');
+
+        // Se clicar em "All", limpa todas as seleções
+        if (clickedTag === 'all') {
+          selectedTags = [];
+          tagLinks.forEach((tag) => tag.classList.remove('active'));
+          this.classList.add('active');
+        } else {
+          // Remove "All" da seleção
+          document.querySelector('#tags a[data-tag="all"]').classList.remove('active');
+
+          if (selectedTags.includes(clickedTag)) {
+            // Se já estava selecionado, remove
+            selectedTags = selectedTags.filter((tag) => tag !== clickedTag);
+            this.classList.remove('active');
+          } else {
+            // Se não estava, adiciona
+            selectedTags.push(clickedTag);
+            this.classList.add('active');
+          }
+        }
+
+        // Se nenhuma tag foi selecionada, mostra todos os artigos
+        if (selectedTags.length === 0) {
+          articles.forEach((article) => {
+            article.style.display = 'block';
+          });
+        } else {
+          // Verifica se o artigo tem qualquer uma das tags selecionadas
+          articles.forEach((article) => {
+            const articleTagsAttr = article.getAttribute('data-tags') || '';
+
+            // Divida a string 'data-tags' em um array de tags
+            const articleTags = articleTagsAttr.split(' ').map((tag) => tag.trim());
+
+            // Verifica se as tags selecionadas estão nas tags do artigo
+            const matchesSelectedTags = selectedTags.some((tag) => {
+              return articleTags.includes(tag);
+            });
+
+            // Mostra ou esconde os artigos com base nas tags selecionadas
+            if (matchesSelectedTags) {
+              article.style.display = 'block';
+            } else {
+              article.style.display = 'none';
+            }
+          });
+        }
+      });
+    });
+  });
+</script>
