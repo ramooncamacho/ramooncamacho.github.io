@@ -21,7 +21,10 @@
     "lint:scss": "stylelint _sass/**/*.scss",
     "lint:fix:scss": "npm run lint:scss -- --fix",
     "test": "npm run lint:scss",
-    "prepare": "husky"
+    "prepare": "husky",
+    "commit-types": "node tools/commit-types.js",
+    "branch-prefixes": "node tools/branch-prefixes.js",
+    "check-branch": "npx branch-name-lint || npm run branch-prefixes"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -40,6 +43,7 @@
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "branchlint": "^0.0.2",
     "concurrently": "^9.1.2",
     "conventional-changelog-conventionalcommits": "^8.0.0",
     "husky": "^9.1.7",
