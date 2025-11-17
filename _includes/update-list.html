@@ -1,37 +1,32 @@
-<!-- Get 5 last posted/updated posts -->
+<!-- Get 5 last posted/updated articles or posts -->
 
 {% assign MAX_SIZE = 5 %}
+{% assign all_items = site.posts | concat: site.articles %}
+{% assign item_list = '' | split: '' %}
 
-{% assign all_list = '' | split: '' %}
+{% for item in all_items %}
+  {% assign datetime = item.last_modified_at | default: item.date %}
 
-{% for post in site.posts %}
-  {% assign datetime = post.last_modified_at | default: post.date %}
-
-  {% capture elem %}
-    {{- datetime | date: "%Y%m%d%H%M%S" -}}::{{- forloop.index0 -}}
+  {% capture entry %}
+    {{- datetime | date: "%Y%m%d%H%M%S" -}}::{{ item.url | relative_url }}::{{ item.title }}
   {% endcapture %}
 
-  {% assign all_list = all_list | push: elem %}
+  {% assign item_list = item_list | push: entry %}
 {% endfor %}
 
-{% assign all_list = all_list | sort | reverse %}
-
-{% assign update_list = '' | split: '' %}
-
-{% for entry in all_list limit: MAX_SIZE %}
-  {% assign update_list = update_list | push: entry %}
-{% endfor %}
+{% assign sorted_list = item_list | sort | reverse %}
+{% assign update_list = sorted_list | slice: 0, MAX_SIZE %}
 
 {% if update_list.size > 0 %}
   <section id="access-lastmod">
     <h2 class="panel-heading">{{- site.data.locales[include.lang].panel.lastmod -}}</h2>
     <ul class="content list-unstyled ps-0 pb-1 ms-1 mt-2">
       {% for item in update_list %}
-        {% assign index = item | split: '::' | last | plus: 0 %}
-        {% assign post = site.posts[index] %}
-        {% assign url = post.url | relative_url %}
+        {% assign parts = item | split: '::' %}
+        {% assign url = parts[1] %}
+        {% assign title = parts[2] %}
         <li class="text-truncate lh-lg">
-          <a href="{{ url }}">{{ post.title }}</a>
+          <a href="{{ url }}">{{ title }}</a>
         </li>
       {% endfor %}
     </ul>
