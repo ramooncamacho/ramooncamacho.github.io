@@ -4,17 +4,17 @@ swcache: true
 ---
 
 [
-  {% for post in site.posts %}
+  {% for article in site.articles %}
     {%- capture description -%}
-      {% include post-description.html %}
+      {% include post-description.html article=article %}
     {%- endcapture -%}
   {
-    "title": {{ post.title | jsonify }},
-    "url": {{ post.url | relative_url | jsonify }},
-    "categories": {{ post.categories | join: ', ' | jsonify }},
-    "tags": {{ post.tags | join: ', ' | jsonify }},
-    "date": "{{ post.date }}",
-    "content": "{{ description }}"
+    "title": {{ article.title | jsonify }},
+    "url": {{ article.url | relative_url | jsonify }},
+    "categories": {{ article.categories | join: ', ' | jsonify }},
+    "tags": {{ article.tags | join: ', ' | jsonify }},
+    "date": "{{ article.date }}",
+    "content": "{{ description | strip_newlines | strip }}"
   }{% unless forloop.last %},{% endunless %}
   {% endfor %}
 ]
